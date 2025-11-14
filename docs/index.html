@@ -34,8 +34,8 @@
     <h2>Risk of Rain Electronic Encyclopedia</h2>
     <p></p>
 
-    <h3> Query an item: </h3>
-    <input type="text" id="query-name" placeholder="Item Name">
+    <p> Query an item: </p>
+    <input type="text" id="itemName" placeholder="Item Name">
     <button onclick="handleQuery()">Search</button>
     <div id="query-output"></div>
 
@@ -58,7 +58,7 @@
             }
 
             query(name) {
-                return this.db.exec(`SELECT * FROM "my_table" WHERE name LIKE '%${name}%'`);
+                return this.db.exec(`SELECT 'Item ID', 'Name',  FROM "itemTable" WHERE 'Name' LIKE '%${name}%'`);
             }
         }
 
@@ -90,7 +90,7 @@
 
                     return rows;
                 }
-                outputDiv.textContent = 'No celestial bodies found.';
+                outputDiv.textContent = 'No results found.';
                 return null;
             }
         }
@@ -107,7 +107,7 @@
         // Event handlers
         async function handleQuery() {
             try {
-                const name = document.getElementById('query-name').value;
+                const name = document.getElementById('itemName').value;
                 const queryResult = dbManager.query(name);
                 const rows = visManager.displayTable(queryResult, document.getElementById('query-output'));
             } catch (error) {

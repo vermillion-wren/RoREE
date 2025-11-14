@@ -1,4 +1,4 @@
-itemID,rarity,name,shortName,itemType,tag,stack,description,unlockCondition
+Item ID,Rarity,Name,Rainglish,Item Type,Tag,Stack,Description,Unlock Condition
 0,0,Repulsion Armor Plate,RAP,addTag,armor,1,Reduce all incoming damage by 5 (+5 per stack). Cannot be reduced below 1.,
 1,0,Mocha,Mocha,utility,mocha,1,Increases attack speed by 7.5% (+7.5% per stack) and movement speed by 7% (+7% per stack).,
 2,0,Bolstering Lantern,Blantern,utility,bolsteringLantern,1,Increase your attack speed by 7.5% for up to 4 (+2 per stack) enemies and allies within 20 (+5 per stack) meters.,
