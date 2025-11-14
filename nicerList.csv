@@ -1,4 +1,4 @@
-﻿Item ID,Rarity,Name,Rainglish,Item Type,Tag,Stack,Description,Unlock Condition
+﻿id,rarity,name,rainglish,type,tag,stack,description,unlock
 0,Common,Repulsion Armor Plate,RAP,-,armor,1,Reduce all incoming damage by 5 (+5 per stack). Cannot be reduced below 1.,
 1,Common,Mocha,Mocha,utility,mocha,1,Increases attack speed by 7.5% (+7.5% per stack) and movement speed by 7% (+7% per stack).,
 2,Common,Bolstering Lantern,Blantern,utility,bolsteringLantern,1,Increase your attack speed by 7.5% for up to 4 (+2 per stack) enemies and allies within 20 (+5 per stack) meters.,
@@ -6,8 +6,7 @@
 4,Common,Tougher Times,Teddy,-,bear,3,15% (+15% per stack) chance to block incoming damage. Unaffected by luck.,Die 5 times.
 5,Common,Tri-Tip Dagger,Bleed,-,tritip,1,10% (+10% per stack) chance to bleed an enemy for 240% base damage.,
 6,Common,Armor-Piercing Rounds,APR,-,bossDamage,1,Deal an additional 20% damage (+20% per stack) to bosses.,Complete a Teleporter event.
-7,Common,Lens-Maker's Glasses,Crit,-,glasses,1,"Your attacks have a 10% (+10% per stack) chance to Critically Strike
-, dealing double damage.",
+7,Common,Lens-Maker's Glasses,Crit,-,glasses,1,"Your attacks have a 10% (+10% per stack) chance to Critically Strike, dealing double damage.",
 8,Common,Crowbar,Crowbar,-,crowbar,1,Deal 75% (+75% per stack) damage to enemies above 90% health.,Discover 10 unique white items.
 9,Common,Warped Echo,Wecho,-,warpedEcho,1,The next source of damage is reduced by 20% and spread into 3 (+1 per stack) hits. All echoed damage is non-lethal except for the final hit.Recharges every 15s.,
 10,Common,Bundle of Fireworks,Fireworks,-,firework,1,Activating an interactable launches 8 (+4 per stack) fireworks that deal 300% base damage.,Duplicate the same item 7 times in a row with a 3D printer.
