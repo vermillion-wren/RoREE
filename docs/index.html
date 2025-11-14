@@ -1,13 +1,119 @@
 <!DOCTYPE html>
-<html lang ="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>RoREE - Risk of Rain Electronic Encyclopedia</title>
     <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        input, button {
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
 </head>
 
 <body>
     <h1>RoREE</h1>
     <h2>Risk of Rain Electronic Encyclopedia</h2>
+    <p></p>
+
+    <h3> Query an item: </h3>
+    <input type="text" id="query-name" placeholder="Item Name">
+    <button onclick="handleQuery()">Search</button>
+    <div id="query-output"></div>
+
+    <script>
+        // Database management
+        class DatabaseManager {
+            constructor(dbPath) {
+                this.dbPath = dbPath;
+                this.db = null;
+            }
+
+            async init() {
+                const SQL = await initSqlJs({
+                    locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`
+                });
+
+                const response = await fetch(this.dbPath);
+                const buffer = await response.arrayBuffer();
+                this.db = new SQL.Database(new Uint8Array(buffer));
+            }
+
+            query(name) {
+                return this.db.exec(`SELECT * FROM "my_table" WHERE name LIKE '%${name}%'`);
+            }
+        }
+
+        // Visualization manager
+        class VisualizationManager {
+            displayTable(queryResult, outputDiv) {
+                if (queryResult.length > 0) {
+                    const rows = queryResult[0].values;
+                    const headers = queryResult[0].columns;
+
+                    const table = document.createElement('table');
+                    const headerRow = table.insertRow();
+                    headers.forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+
+                    rows.forEach(row => {
+                        const tr = table.insertRow();
+                        row.forEach(cell => {
+                            const td = tr.insertCell();
+                            td.textContent = cell;
+                        });
+                    });
+
+                    outputDiv.innerHTML = '';
+                    outputDiv.appendChild(table);
+
+                    return rows;
+                }
+                outputDiv.textContent = 'No celestial bodies found.';
+                return null;
+            }
+        }
+
+        // Global instance of the DatabaseManager
+        const dbManager = new DatabaseManager('https://raw.githubusercontent.com/vermillion-wren/RoREE/refs/heads/main/docs/sqlite/itemlist.sqlite');
+        const visManager = new VisualizationManager();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await dbManager.init();
+            console.log("Database initialized.");
+        });
+
+        // Event handlers
+        async function handleQuery() {
+            try {
+                const name = document.getElementById('query-name').value;
+                const queryResult = dbManager.query(name);
+                const rows = visManager.displayTable(queryResult, document.getElementById('query-output'));
+            } catch (error) {
+                console.error('Error querying the database:', error);
+                document.getElementById('query-output').textContent = 'An error occurred while querying the database.';
+            }
+        }
+    </script>
 </body>
