@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>RoREE - Risk of Rain Electronic Encyclopedia</title>
+
     <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: auto;
             padding: 10px;
         }
@@ -22,8 +26,13 @@
         }
 
         th, td {
-            border: 1px solid black;
+            border: 1px solid #444444;
+            text-align: left;
             padding: 8px;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #e0e0e0;
         }
     </style>
 </head>
@@ -35,45 +44,42 @@
     <!-- Column Select -->
     <fieldset>
         <legend> Columns to Show: </legend>
+
+        <!--
+            <input type="checkbox" id="showAll" name="showAll" checked/>
+            <label for="showAll">Show Every Column</label>
+        -->
+
         <details>
             <summary>Options</summary>
-            <ul>
-                <input type="checkbox" id="showID" name="showID">
-                <label for="showID">Item ID</label>
-                <br>
 
-                <input type="checkbox" id="showRarity" name="showRarity">
-                <label for="showRarity">Rarity</label>
-                <br>
-
-                <input type="checkbox" id="showName" name="showName">
-                <label for="showName">Name</label>
-                <br>
-
-                <input type="checkbox" id="showRainglish" name="showRainglish">
-                <label for="showRainglish">Rainglish Name</label>
-                <br>
-
-                <input type="checkbox" id="showType" name="showType">
-                <label for="showType">Item Type</label>
-                <br>
-
-                <input type="checkbox" id="showTag" name="showTag">
-                <label for="showTag">Item Tag</label>
-                <br>
-
-                <input type="checkbox" id="showStack" name="showStack">
-                <label for="showStack">Stack Limit</label>
-                <br>
-
-                <input type="checkbox" id="showDescription" name="showDescription">
-                <label for="showDescription">Item Description</label>
-                <br>
-
-                <input type="checkbox" id="showUnlock" name="showUnlock">
-                <label for="showUnlock">Unlock Condition</label>
-                <br>
-            </ul>
+            <input type="checkbox" id="showID" name="columnOptions" value="id" checked>
+            <label for="showID">Item ID</label>
+            <br>
+            <input type="checkbox" id="showName" name="columnOptions" value="name" checked>
+            <label for="showName">Item Name</label>
+            <br>
+            <input type="checkbox" id="showRainglish" name="columnOptions" value="rainglish" checked>
+            <label for="showRainglish">Rainglish Name</label>
+            <br>
+            <input type="checkbox" id="showRarity" name="columnOptions" value="rarity" checked>
+            <label for="showRarity">Rarity</label>
+            <br>
+            <input type="checkbox" id="showType" name="columnOptions" value="type">
+            <label for="showType">Item Type</label>
+            <br>
+            <input type="checkbox" id="showTag" name="columnOptions" value="tag">
+            <label for="showTag">Item Tag</label>
+            <br>
+            <input type="checkbox" id="showStack" name="columnOptions" value="stack">
+            <label for="showStack">Stack Limit</label>
+            <br>
+            <input type="checkbox" id="showDescription" name="columnOptions" value="description" checked>
+            <label for="showDescription">Item Description</label>
+            <br>
+            <input type="checkbox" id="showUnlock" name="columnOptions" value="unlock">
+            <label for="showUnlock">Unlock Condition</label>
+            <br>
         </details>
     </fieldset>
     <br />
@@ -81,91 +87,172 @@
     <!-- Query Maker -->
     <fieldset>
         <legend> Query an item: </legend>
-        <input type="text" id="itemName" placeholder="Item Name">
+        <!-- Item Name-->
+        <label for="itemName">Search for</label>
+        <input type="text" id="itemName" placeholder="Name">
+        <br />
+
+        <label for="itemRarity">with rarity</label>
+        <select id="itemRarity" name="rarity">
+            <option value="all">-</option>
+            <option value="Common">Common</option>
+            <option value="Uncommon">Uncommon</option>
+            <option value="Legendary">Legendary</option>
+            <option value="Boss">Boss</option>
+            <option value="Void">Void</option>
+            <option value="Lunar">Lunar</option>
+        </select>
+        <hr />
+
+        <details>
+            <summary>More Filters</summary>
+
+        </details>
+
+        <!-- Item Rarity -->
+
+        <br />
         <button onclick="handleQuery()">Search</button>
     </fieldset>
     <br />
 
+    <div id="query-report"></div>
+    <br />
     <div id="query-output"></div>
 
     <script>
-        columns = ['id', 'rarity', 'name', 'rainglish', 'type', 'tag', 'stack', 'description', 'unlock'];
+            columns = ['id', 'rarity', 'name', 'rainglish', 'type', 'tag', 'stack', 'description', 'unlock'];
 
-        // Database management
-        class DatabaseManager {
-            constructor(dbPath) {
-                this.dbPath = dbPath;
-                this.db = null;
-            }
-
-            async init() {
-                const SQL = await initSqlJs({
-                    locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`
-                });
-
-                const response = await fetch(this.dbPath);
-                const buffer = await response.arrayBuffer();
-                this.db = new SQL.Database(new Uint8Array(buffer));
-            }
-
-            query(name) {
-                return this.db.exec(`SELECT * FROM "itemList" WHERE name LIKE '%${name}%'`);
-            }
-        }
-
-        // Visualization manager
-        class VisualizationManager {
-            displayTable(queryResult, outputDiv) {
-                if (queryResult.length > 0) {
-                    const rows = queryResult[0].values;
-                    const headers = queryResult[0].columns;
-                    console.log(headers);
-
-                    const table = document.createElement('table');
-                    const headerRow = table.insertRow();
-                    headers.forEach(header => {
-                        const th = document.createElement('th');
-                        th.textContent = header;
-                        headerRow.appendChild(th);
-                    });
-
-                    rows.forEach(row => {
-                        const tr = table.insertRow();
-                        row.forEach(cell => {
-                            const td = tr.insertCell();
-                            td.textContent = cell;
-                        });
-                    });
-
-                    outputDiv.innerHTML = '';
-                    outputDiv.appendChild(table);
-
-                    return rows;
+            // Database management
+            class DatabaseManager {
+                constructor(dbPath) {
+                    this.dbPath = dbPath;
+                    this.db = null;
                 }
-                outputDiv.textContent = 'No results found.';
-                return null;
+
+                async init() {
+                    const SQL = await initSqlJs({
+                        locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`
+                    });
+
+                    const response = await fetch(this.dbPath);
+                    const buffer = await response.arrayBuffer();
+                    this.db = new SQL.Database(new Uint8Array(buffer));
+                }
+
+                query(sqlQuery) {
+                    return this.db.exec(sqlQuery);
+                }
             }
-        }
 
-        // Global instance of the DatabaseManager
-        const dbManager = new DatabaseManager('https://raw.githubusercontent.com/vermillion-wren/RoREE/refs/heads/main/docs/sqlite/itemDB.sqlite');
-        const visManager = new VisualizationManager();
+            // Visualization manager
+            class VisualizationManager {
+                displayTable(queryResult, outputDiv) {
+                    if (queryResult.length > 0) {
+                        document.getElementById('query-report').innerText = "Found " + queryResult[0].values.length + " items matching your filters!";
+                        const rows = queryResult[0].values;
+                        const headers = queryResult[0].columns;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await dbManager.init();
-            console.log("Database initialized.");
-        });
+                        const table = document.createElement('table');
+                        const headerRow = table.insertRow();
+                        headers.forEach(header => {
+                            const th = document.createElement('th');
+                            th.textContent = header;
+                            th.setAttribute("style", "background-color:#eff28d");
+                            headerRow.appendChild(th);
+                        });
 
-        // Event handlers
-        async function handleQuery() {
-            try {
-                const name = document.getElementById('itemName').value;
-                const queryResult = dbManager.query(name);
-                const rows = visManager.displayTable(queryResult, document.getElementById('query-output'));
-            } catch (error) {
-                console.error('Error querying the database:', error);
-                document.getElementById('query-output').textContent = 'An error occurred while querying the database.';
+                        rows.forEach(row => {
+                            const tr = table.insertRow();
+                            row.forEach(cell => {
+                                const td = tr.insertCell();
+                                td.textContent = cell;
+
+                                switch (cell) {
+                                    case "Common":
+                                        td.setAttribute("style", "background-color:#aaaaaa");
+                                        break;
+                                    case "Uncommon":
+                                        td.setAttribute("style", "background-color:#00ff66");
+                                        break;
+                                    case "Legendary":
+                                        td.setAttribute("style", "background-color:#ff0033");
+                                        break;
+                                    case "Lunar":
+                                        td.setAttribute("style", "background-color:#0066ff");
+                                        break;
+                                    case "Boss":
+                                        td.setAttribute("style", "background-color:#ffff00");
+                                        break;
+                                    case "Void":
+                                        td.setAttribute("style", "background-color:#c678b4");
+                                        break;
+                                    case "Equipment":
+                                        td.setAttribute("style", "background-color:#ff6633");
+                                        break;
+                                }
+                            });
+                        });
+
+                        outputDiv.innerHTML = '';
+                        outputDiv.appendChild(table);
+
+                        return rows;
+                    }
+                    outputDiv.textContent = 'No results found.';
+                    return null;
+                }
             }
-        }
-    </script>
+
+            // Global instance of the DatabaseManager
+            const dbManager = new DatabaseManager('https://raw.githubusercontent.com/vermillion-wren/RoREE/refs/heads/main/docs/sqlite/itemDB.sqlite');
+            const visManager = new VisualizationManager();
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                await dbManager.init();
+                console.log("Database initialized.");
+            });
+
+            // Event handlers
+            async function handleQuery() {
+                document.getElementById('query-report').innerText = "";
+
+                try {
+                    var columnChecklist = document.querySelectorAll('input[name="columnOptions"]:checked');
+                    var selectedCheckboxes = Array.from(columnChecklist).map(checkbox => checkbox.value);
+
+                    if (selectedCheckboxes.length == 0) {
+                        document.getElementById('query-output').textContent = 'No columns selected. What are you trying to see?';
+                        return;
+                    }
+
+                    var columnsToShow = selectedCheckboxes.join(", ");
+
+                    // -----------------------------------------------
+                    const name = document.getElementById('itemName').value;
+                    const rarity = document.getElementById('itemRarity').value;
+
+                    const clauses = [];
+
+                    if (rarity != "all") {
+                        clauses.push(`AND rarity LIKE '${rarity}%'`);
+                    }
+
+                    var baseQuery = `SELECT ${columnsToShow} FROM "itemList" WHERE name LIKE '%${name}%'`;
+
+                    for (const clause of clauses) {
+                        baseQuery = baseQuery + " " + clause;
+                    }
+
+                    var query = baseQuery;
+
+                    const queryResult = dbManager.query(query);
+
+                    const rows = visManager.displayTable(queryResult, document.getElementById('query-output'));
+                } catch (error) {
+                    console.error('Error querying the database:', error);
+                    document.getElementById('query-output').textContent = 'An error occurred while querying the database.';
+                }
+            }
+        </script>
 </body>
