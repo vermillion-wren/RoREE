@@ -1,0 +1,45 @@
+.header img {
+    float: left;
+    width: 100px;
+    height: 100px;
+    background-color: transparent
+}
+
+.header h1 {
+    position: relative;
+    top: 18px;
+    left: 10px;
+}
+
+.header h2 {
+    position: relative;
+    left: 10px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1000px;
+    margin: auto;
+    padding: 10px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+input, button {
+    margin: 5px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #444444;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(odd) {
+    background-color: #2e2e2e;
+}

@@ -3,41 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>RoREE - Risk of Rain Electronic Encyclopedia</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
 
     <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: auto;
-            padding: 10px;
-        }
-
-        input, button {
-            margin: 5px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #444444;
-            text-align: left;
-            padding: 8px;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #e0e0e0;
-        }
-    </style>
 </head>
 
 <body>
-    <h1>RoREE</h1>
-    <h2>Risk of Rain Electronic Encyclopedia</h2>
+    <div class="header">
+        <img src="favicon.png" />
+        <h1>RoREE</h1>
+        <h2>Your Risk of Rain Electronic Encyclopedia</h2>
+    </div>
+    <br />
+    
 
     <!-- Settings -->
 
@@ -46,9 +25,11 @@
 
         <details>
             <summary>Columns To Display</summary>
-
             <input type="checkbox" id="showID" name="columnOptions" value="id">
             <label for="showID">Item ID</label>
+            <br>
+            <input type="checkbox" id="showIcons" name="columnOptions" value="imageLink" checked>
+            <label for="showID">Item Icon</label>
             <br>
             <input type="checkbox" id="showName" name="columnOptions" value="name" checked>
             <label for="showName">English Name</label>
@@ -162,7 +143,8 @@
             "tag": "Item Tag",
             "stack": "Stacking Type",
             "description": "Effect Description",
-            "unlock": "Unlock Condition"
+            "unlock": "Unlock Condition",
+            "imageLink": "Icon"
         };
 
         // Database management
@@ -208,38 +190,45 @@
                     headers.forEach(header => {
                         const th = document.createElement('th');
                         th.textContent = headerNames[header];
-                        th.setAttribute("style", "background-color:#eff28d");
+                        th.setAttribute("style", "background-color:#1f1a66");
                         headerRow.appendChild(th);
                     });
+
+                    const regex = /https:\/\//;
 
                     rows.forEach(row => {
                         const tr = table.insertRow();
                         row.forEach(cell => {
                             const td = tr.insertCell();
-                            td.textContent = cell;
 
-                            switch (cell) {
-                                case "Common":
-                                    td.setAttribute("style", "background-color:#aaaaaa");
-                                    break;
-                                case "Uncommon":
-                                    td.setAttribute("style", "background-color:#00ff66");
-                                    break;
-                                case "Legendary":
-                                    td.setAttribute("style", "background-color:#ff0033");
-                                    break;
-                                case "Lunar":
-                                    td.setAttribute("style", "background-color:#0066ff");
-                                    break;
-                                case "Boss":
-                                    td.setAttribute("style", "background-color:#ffff00");
-                                    break;
-                                case "Void":
-                                    td.setAttribute("style", "background-color:#c678b4");
-                                    break;
-                                case "Equipment":
-                                    td.setAttribute("style", "background-color:#ff6633");
-                                    break;
+                            if (regex.test(cell)) {
+                                td.innerHTML = "<img src=" + cell + ">";
+                            } else {
+                                td.textContent = cell;
+
+                                switch (cell) {
+                                    case "Common":
+                                        td.setAttribute("style", "background-color:#aaaaaa");
+                                        break;
+                                    case "Uncommon":
+                                        td.setAttribute("style", "background-color:#00ff66");
+                                        break;
+                                    case "Legendary":
+                                        td.setAttribute("style", "background-color:#ff0033");
+                                        break;
+                                    case "Lunar":
+                                        td.setAttribute("style", "background-color:#0066ff");
+                                        break;
+                                    case "Boss":
+                                        td.setAttribute("style", "background-color:#ffff00");
+                                        break;
+                                    case "Void":
+                                        td.setAttribute("style", "background-color:#c678b4");
+                                        break;
+                                    case "Equipment":
+                                        td.setAttribute("style", "background-color:#ff6633");
+                                        break;
+                                }
                             }
                         });
                     });
@@ -257,14 +246,14 @@
         }
 
         // Global instance of the DatabaseManager
-        const dbManager = new DatabaseManager('https://raw.githubusercontent.com/vermillion-wren/RoREE/refs/heads/main/docs/sqlite/itemDB.sqlite');
+        const dbManager = new DatabaseManager('https://raw.githubusercontent.com/vermillion-wren/RoREE/refs/heads/main/docs/sqlite/withImages.sqlite');
         const visManager = new VisualizationManager();
 
         document.addEventListener('DOMContentLoaded', async () => {
             await dbManager.init();
             console.log("Database initialized.");
 
-            const initialQuery = `SELECT name, rainglish, rarity, description FROM "itemList"`;
+            const initialQuery = `SELECT imageLink, name, rainglish, rarity, description FROM "itemList"`;
             visManager.displayTable(dbManager.query(initialQuery), document.getElementById('query-output'), false);
         });
 
