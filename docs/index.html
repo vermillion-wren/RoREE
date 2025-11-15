@@ -9,11 +9,11 @@
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         input, button {
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         table {
@@ -31,16 +31,54 @@
 <body>
     <h1>RoREE</h1>
     <h2>Risk of Rain Electronic Encyclopedia</h2>
-    <p></p>
 
+    <!-- Column Select -->
+    <fieldset>
+        <legend> Columns to Show: </legend>
+        <details>
+            <input type="checkbox" id="showID" name="showID">
+            <label for="showID">Item ID</label><br>
 
+            <input type="checkbox" id="showRarity" name="showRarity">
+            <label for="showRarity">Rarity</label><br>
 
-    <p> Query an item: </p>
-    <input type="text" id="itemName" placeholder="Item Name">
-    <button onclick="handleQuery()">Search</button>
+            <input type="checkbox" id="showName" name="showName">
+            <label for="showName">Name</label><br>
+
+            <input type="checkbox" id="showRainglish" name="showRainglish">
+            <label for="showRainglish">Rainglish Name</label><br>
+
+            <input type="checkbox" id="showType" name="showType">
+            <label for="showType">Item Type</label><br>
+
+            <input type="checkbox" id="showTag" name="showTag">
+            <label for="showTag">Item Tag</label><br>
+
+            <input type="checkbox" id="showStack" name="showStack">
+            <label for="showStack">Stack Limit</label><br>
+
+            <input type="checkbox" id="showDescription" name="showDescription">
+            <label for="showDescription">Item Description</label><br>
+
+            <input type="checkbox" id="showUnlock" name="showUnlock">
+            <label for="showUnlock">Unlock Condition</label><br>
+        </details>
+    </fieldset>
+    <br />
+
+    <!-- Query Maker -->
+    <fieldset>
+        <legend> Query an item: </legend>
+        <input type="text" id="itemName" placeholder="Item Name">
+        <button onclick="handleQuery()">Search</button>
+    </fieldset>
+    <br />
+
     <div id="query-output"></div>
 
     <script>
+        columns = ['id', 'rarity', 'name', 'rainglish', 'type', 'tag', 'stack', 'description', 'unlock'];
+
         // Database management
         class DatabaseManager {
             constructor(dbPath) {
@@ -59,7 +97,7 @@
             }
 
             query(name) {
-                return this.db.exec(`SELECT * FROM "itemTable" WHERE name LIKE '%${name}%'`);
+                return this.db.exec(`SELECT * FROM "itemList" WHERE name LIKE '%${name}%'`);
             }
         }
 
