@@ -40,6 +40,7 @@
     <h2>Risk of Rain Electronic Encyclopedia</h2>
 
     <!-- Settings -->
+
     <fieldset>
         <legend> Output Settings: </legend>
 
@@ -139,6 +140,7 @@
         </details>
 
         <button onclick="queryByFilters()">Search</button>
+        <button onclick="returnToDefault()">Reset Filters</button>
     </fieldset>
     <br />
 
@@ -266,6 +268,23 @@
         });
 
         // Event handlers
+        function returnToDefault() {
+            var name = document.getElementById('itemName');
+            var checkTagsAlso = document.getElementById('checkTags');
+
+            var rarity = document.getElementById('itemRarity');
+            var keyword = document.getElementById('descriptionKeywords');
+            var type = document.getElementById('itemType');
+            var stacking = document.getElementById('itemStacking');
+
+            name.value = name.defaultValue;
+            checkTagsAlso.checked = false;
+            rarity.value = "all";
+            keyword.value = keyword.defaultValue;
+            type.value = "all";
+            stacking.value = "all";
+        }
+
         async function queryByFilters() {
             document.getElementById('query-report').innerText = "";
             document.getElementById('query-output').innerHTML = "";
